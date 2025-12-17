@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Envelope Budget</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 900px; margin: 24px auto; padding: 0 16px; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    input, select, button { padding: 8px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { padding: 10px; border-bottom: 1px solid #eee; text-align: left; }
+    .success { background: #eaffea; border: 1px solid #b9f3b9; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    .error { background: #ffecec; border: 1px solid #ffb8b8; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+    hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+  </style>
+</head>
+<body>
+
+<h1>Envelope Budget</h1>
+
+<div th:if="${success}" class="success" th:text="${success}"></div>
+<div th:if="${spendedFromBalance}" class="success">
+  The amount spended from balance : <b th:text="${spendedFromBalance}"></b>
+</div>
+<div th:if="${error}" class="error" th:text="${error}"></div>
+
+<div class="card">
+  <h2>Budget</h2>
+  <p><b>Available Income:</b> <span th:text="${budget.availableIncome}"></span></p>
+
+  <form class="row" th:action="@{/income}" method="post">
+    <input type="number" step="0.01" min="0.01" name="amount" placeholder="Income amount" required/>
+    <button type="submit">Add Income</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Create Envelope</h2>
+  <form class="row" th:action="@{/envelopes}" method="post">
+    <input name="name" placeholder="Envelope name (e.g., Rent)" required/>
+    <button type="submit">Create</button>
+  </form>
+</div>
+
+<div class="card">
+  <h2>Envelopes</h2>
+
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Balance</th></tr>
+    </thead>
+    <tbody>
+      <tr th:if="${#lists.isEmpty(envelopes)}">
+        <td colspan="2">No envelopes yet.</td>
+      </tr>
+      <tr th:each="e : ${envelopes}">
+        <td th:text="${e.name}"></td>
+        <td th:text="${e.balance}"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr/>
+
+  <h3>Allocate</h3>
+  <form class="row" th:action="@{/allocate}" method="post">
+    <select name="envelopeId" required>
+      <option value="" disabled selected>Select envelope</option>
+      <option th:each="e : ${envelopes}" th:value="${e.id}" th:text="${e.name}"></option>
+    </select>
+    <input type="number" step="0.01" min="0.01" name="amount" placeholder="Amount" required/>
+    <button type="submit">Allocate</button>
+  </form>
+
+  <h3>Spend</h3>
+  <form class="row" th:action="@{/spend}" method="post">
+    <select name="envelopeId" required>
+      <option value="" disabled selected>Select envelope</option>
+      <option th:each="e : ${envelopes}" th:value="${e.id}" th:text="${e.name}"></option>
+    </select>
+    <input type="number" step="0.01" min="0.01" name="amount" placeholder="Amount" required/>
+    <button type="submit">Spend</button>
+  </form>
+</div>
+
+</body>
+</html>
