@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
@@ -14,10 +15,27 @@
     .success { background: #eaffea; border: 1px solid #b9f3b9; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
     .error { background: #ffecec; border: 1px solid #ffb8b8; padding: 10px; border-radius: 8px; margin-bottom: 12px; }
     hr { border: none; border-top: 1px solid #eee; margin: 16px 0; }
+    .user-bar{
+	  position: fixed;
+	  top: 16px;
+	  right: 16px;
+	  display: flex;
+	  align-items: center;
+	  gap: 12px;
+	  z-index: 1000;
+	}
   </style>
 </head>
 <body>
 
+<div class="user-bar" sec:authorize="isAuthenticated()">
+  <span>Hello <strong sec:authentication="name">User</strong></span>
+
+  <form th:action="@{/logout}" method="post">
+    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+    <button type="submit">Logout</button>
+  </form>
+</div>
 <h1>Envelope Budget</h1>
 
 <div th:if="${success}" class="success" th:text="${success}"></div>
